@@ -8,7 +8,7 @@ editor: visual
 
 ## Original Figure
 
-![](images/Screenshot 2025-01-24 at 4.28.01 PM-01.png){width="489"}
+![](images/original_figure.png){width="516"}
 
 Strengths: The original figure effectively presents the data on the number of correct recalls across the Sleep and Wake groups. It combines a violin plot, a box plot with error bars, and points that represent individual participants, allowing for multiple visualization methods. This multifaceted approach provides a comprehensive view of the data, enabling the audience to interpret the results in different ways.
 
@@ -20,6 +20,11 @@ The new figure draws the individual participants in the way of clearer. So that 
 
 ```{r}
 library(tidyverse)
+library(ggplot2)
+library(gghalves)
+
+studied_data <- read.csv("./osfstorage_archive/Recall_data/studied_final.csv")
+encoding_data <- read.csv("./osfstorage_archive/Miscellaneous/Encoding_Test_Time.csv")
 
 # Aggregate correct recalls for each participant and merge them
 aggregated_data <- studied_data %>%
