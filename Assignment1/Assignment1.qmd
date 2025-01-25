@@ -6,6 +6,8 @@ editor: visual
 
 # Figure Assignment
 
+Github repo link: <https://github.com/yc8272/COGS219>
+
 ## Original Figure
 
 ![](images/original_figure.png){width="516"}
