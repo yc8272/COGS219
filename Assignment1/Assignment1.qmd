@@ -1,0 +1,107 @@
+---
+title: "Assignment 1"
+format: html
+editor: visual
+---
+
+# Figure Assignment
+
+## Original Figure
+
+![](images/Screenshot 2025-01-24 at 4.28.01 PM-01.png){width="489"}
+
+Strengths: The original figure effectively presents the data on the number of correct recalls across the Sleep and Wake groups. It combines a violin plot, a box plot with error bars, and points that represent individual participants, allowing for multiple visualization methods. This multifaceted approach provides a comprehensive view of the data, enabling the audience to interpret the results in different ways.
+
+Weaknesses: Firstly, the points are concentrated together to represent the number of individuals in each intervals of the number of studied words recalled. So exact number is not accurate and also it does not tell us the density of individuals in x-axis. In addition, it may involve missing data annotations, lack of contextual explanation, Finally, it would be better to have an adequate color contrast.
+
+## New Figure and Improvements
+
+The new figure draws the individual participants in the way of clearer. So that we can access the information from the density of the points. Additionally, it provides a horizontal reference line to highlight the mean or zero difference, making it look polished and easier to interpret without overwhelming other elements of the visualization. It also highlight the means of two groups, making it easier to compare the average performance of the groups.
+
+```{r}
+library(tidyverse)
+
+# Aggregate correct recalls for each participant and merge them
+aggregated_data <- studied_data %>%
+  group_by(Participant.Private.ID) %>%
+  summarise(TotalRecalls = sum(studied_recalled))
+
+merged_data <- left_join(aggregated_data, encoding_data, by = "Participant.Private.ID")
+
+filtered_data <- merged_data %>%
+  filter(group %in% c("Sleep", "Wake"))
+
+# Calculate the mean recall
+summary_data <- filtered_data %>%
+  group_by(group) %>%
+  summarise(
+    MeanRecall = round(mean(TotalRecalls)),
+    CI_lower = round(mean(TotalRecalls) - 1.96 * (sd(TotalRecalls) / sqrt(n()))),
+    CI_upper = round(mean(TotalRecalls) + 1.96 * (sd(TotalRecalls) / sqrt(n()))),
+    N = n()
+  )
+```
+
+After dealing with two data set, we can draw the new figure.
+
+```{r}
+ggplot(filtered_data, aes(x = group, y = TotalRecalls, fill = group)) +
+
+  geom_half_violin(
+    side = "r",
+    trim = FALSE,      
+    alpha = 0.3,
+    color = NA
+  ) +
+
+  geom_boxplot(
+    width = 0.3,
+    outlier.shape = NA,
+    color = NA
+  ) +
+  stat_summary(
+    fun = mean, geom = "point", size = 4, color = "black", shape = 18
+  ) +
+  geom_errorbar(
+    data = summary_data,
+    aes(
+      x = group,
+      ymin = CI_lower,
+      ymax = CI_upper
+    ),
+    width = 0.2,
+    color = "black",
+    size = 0.8,
+    inherit.aes = FALSE
+  ) +
+ geom_point(
+    alpha = 0.5,
+    size = 1, 
+    position = position_jitter(width = 0.15, height = 0), 
+    aes(x = as.numeric(as.factor(group)) - 0.15)      
+  ) +
+  geom_segment(
+    aes(x = 1, xend = 2, y = 95, yend = 95), size = 1
+  ) +
+  annotate(
+    "text", x = 1.5, y = 98, label = "*", size = 5
+  ) +
+  scale_fill_manual(values = c("Sleep" = "#ff7f0e", "Wake" = "#1f77b4")) +
+  labs(
+    title = "12-hour delay",
+    x = "",
+    y = "Number of Studied Words Recalled (Max = 160)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title.y = element_text(size = 12),
+    axis.text.x = element_text(size = 12)
+  ) + 
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 110, 10)) +
+  coord_fixed(ratio = 0.015) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray") 
+```
+
+The figure represents the number of correct recalls across the Sleep and Wake groups. Each dot represents an individual participant and the error bars represent 95% confidence intervals.
