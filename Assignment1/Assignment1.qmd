@@ -52,7 +52,7 @@ summary_data <- filtered_data %>%
 After dealing with two data set, we can draw the new figure.
 
 ```{r}
-ggplot(filtered_data, aes(x = group, y = TotalRecalls, fill = group)) +
+plot <- ggplot(filtered_data, aes(x = group, y = TotalRecalls, fill = group)) +
 
   geom_half_violin(
     side = "r",
@@ -109,6 +109,14 @@ ggplot(filtered_data, aes(x = group, y = TotalRecalls, fill = group)) +
   scale_y_continuous(limits = c(0, 110), breaks = seq(0, 110, 10)) +
   coord_fixed(ratio = 0.015) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray") 
+
+ggsave(
+  filename = "new_figure.pdf",
+  plot = plot,
+  width = 8,
+  height = 6,
+  dpi = 300 
+)
 ```
 
 The figure represents the number of correct recalls across the Sleep and Wake groups. Each dot represents an individual participant and the error bars represent 95% confidence intervals.
