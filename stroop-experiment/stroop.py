@@ -4,6 +4,7 @@ import random
 from psychopy import visual,event,core,gui
 
 stimuli = ['red', 'orange', 'yellow', 'green', 'blue']
+valid_keys = ['r', 'o', 'y', 'g', 'b', 'q']
 
 win = visual.Window([800,600],color="gray", units='pix',checkTiming=False)
 placeholder = visual.Rect(win,width=180,height=80, fillColor="lightgray",lineColor="black", lineWidth=6,pos=[0,0])
@@ -27,11 +28,11 @@ while True:
     placeholder.draw()
     word_stim.draw()
     win.flip()
-    core.wait(1.0)
+    key = event.waitKeys(keyList=valid_keys)[0]
+    if key == 'q':
+        win.close()
+        core.quit()
+    
     placeholder.draw()
     win.flip()
     core.wait(.15)
-
-    if event.getKeys(['q']):
-        win.close()
-        core.quit()
