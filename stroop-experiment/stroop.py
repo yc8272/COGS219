@@ -12,6 +12,7 @@ placeholder = visual.Rect(win,width=180,height=80, fillColor="lightgray",lineCol
 word_stim = visual.TextStim(win,text="", height=40, color="black",pos=[0,0])
 instruction = visual.TextStim(win,text="Press the first letter of the ink color", height=20, color="black",pos=[0,-200])
 fixation = visual.TextStim(win, text="+", height=15, color="black", pos=[0,0])
+feedback = visual.TextStim(win, text="Incorrect", height=30, color="black", pos=[0,0])
 
 instruction.autoDraw = True
 
@@ -41,6 +42,14 @@ while True:
         print(f"Reaction times (ms): {RTs}")
         win.close()
         core.quit()
+
+    correct_response = cur_stim[0]
+    
+    if key != correct_response:
+        placeholder.draw()
+        feedback.draw()
+        win.flip()
+        core.wait(1.0)
 
     RTs.append(round(rt))
     print(f"Last reaction time: {RTs[-1]} ms")
