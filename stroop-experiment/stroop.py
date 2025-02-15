@@ -1,11 +1,16 @@
 import time
 import sys
 import random
-from psychopy import visual,event,core,gui
+from psychopy import visual, event, core, gui
+
+def make_incongruent(color):
+    other_colors = [c for c in stimuli if c != color]
+    return random.choice(other_colors)
 
 stimuli = ['red', 'orange', 'yellow', 'green', 'blue']
 valid_keys = ['r', 'o', 'y', 'g', 'b', 'q']
 RTs = []
+condition_RTs = {'congruent': [], 'incongruent': []}
 
 win = visual.Window([800,600],color="gray", units='pix',checkTiming=False)
 placeholder = visual.Rect(win,width=180,height=80, fillColor="lightgray",lineColor="black", lineWidth=6,pos=[0,0])
@@ -20,9 +25,15 @@ instruction.autoDraw = True
 rt_clock = core.Clock()
 
 while True:
-    cur_stim = random.choice(stimuli)
-    word_stim.setText(cur_stim)
-    word_stim.setColor(cur_stim)
+    is_incongruent = random.choice([True, False])
+    word = random.choice(stimuli)
+    if is_incongruent:
+        display_color = make_incongruent(word)
+    else:
+        display_color = word
+        
+    word_stim.setText(word)
+    word_stim.setColor(display_color)
     placeholder.draw()
     fixation.draw()
     win.flip()
@@ -53,7 +64,7 @@ while True:
         win.close()
         core.quit()
 
-    correct_response = cur_stim[0]
+    correct_response = display_color[0]
     
     if key != correct_response:
         placeholder.draw()
@@ -62,7 +73,11 @@ while True:
         core.wait(1.0)
 
     RTs.append(round(rt))
-    print(f"Last reaction time: {RTs[-1]} ms")
+    if is_incongruent:
+        condition_RTs['incongruent'].append(round(rt))
+    else:
+        condition_RTs['congruent'].append(round(rt))    
+
     placeholder.draw()
     win.flip()
     core.wait(.15)
