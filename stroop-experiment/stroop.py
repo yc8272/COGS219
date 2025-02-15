@@ -13,6 +13,7 @@ word_stim = visual.TextStim(win,text="", height=40, color="black",pos=[0,0])
 instruction = visual.TextStim(win,text="Press the first letter of the ink color", height=20, color="black",pos=[0,-200])
 fixation = visual.TextStim(win, text="+", height=15, color="black", pos=[0,0])
 feedback = visual.TextStim(win, text="Incorrect", height=30, color="black", pos=[0,0])
+timeout = visual.TextStim(win, text="Too slow", height=30, color="black", pos=[0,0])
 
 instruction.autoDraw = True
 
@@ -35,8 +36,17 @@ while True:
 
     rt_clock.reset()
     
-    key = event.waitKeys(keyList=valid_keys)[0]
+    key = event.waitKeys(maxWait=2.0, keyList=valid_keys)
     rt = rt_clock.getTime() * 1000
+
+    if key is None:
+        placeholder.draw()
+        timeout.draw()
+        win.flip()
+        core.wait(1.0)
+        continue
+
+    key = key[0]
 
     if key == 'q':
         print(f"Reaction times (ms): {RTs}")
