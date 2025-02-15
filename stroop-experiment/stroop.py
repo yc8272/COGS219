@@ -11,26 +11,24 @@ word_stim = visual.TextStim(win,text="", height=40, color="black",pos=[0,0])
 instruction = visual.TextStim(win,text="Press the first letter of the ink color", height=20, color="black",pos=[0,-200])
 fixation = visual.TextStim(win, text="+", height=15, color="black", pos=[0,0])
 
+instruction.autoDraw = True
+
 while True:
     cur_stim = random.choice(stimuli)
     word_stim.setText(cur_stim)
     word_stim.setColor(cur_stim)
     placeholder.draw()
-    instruction.draw()
     fixation.draw()
     win.flip()
     core.wait(0.5)
     placeholder.draw()
-    instruction.draw()
     win.flip()
     core.wait(0.5)
     placeholder.draw()
-    instruction.draw()
     word_stim.draw()
     win.flip()
     core.wait(1.0)
     placeholder.draw()
-    instruction.draw()    
     win.flip()
     core.wait(.15)
 
