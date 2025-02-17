@@ -2,6 +2,7 @@ import time
 import sys
 import random
 from psychopy import visual, event, core, gui
+import os
 
 def make_incongruent(color):
     other_colors = [c for c in stimuli if c != color]
@@ -23,6 +24,30 @@ timeout = visual.TextStim(win, text="Too slow", height=30, color="black", pos=[0
 instruction.autoDraw = True
 
 rt_clock = core.Clock()
+
+runtime_vars = {}
+dlg = gui.Dlg(title="Stroop Task Setup")
+dlg.addField('Subject Code:')
+dlg.addField('Proportion Incongruent Trials:', choices=["25", "50", "75"])
+ok_data = dlg.show()
+
+if not dlg.OK:
+    core.quit()
+
+runtime_vars['subj_code'] = ok_data[0]
+runtime_vars['prop_incongruent'] = int(ok_data[1])
+
+data_dir = "data"
+if not os.path.exists(data_dir):
+    os.mkdir(data_dir)
+file = os.path.join(data_dir, f"{runtime_vars['subj_code']}_data.csv")
+if os.path.exists(file):
+    err_dlg = gui.Dlg(title="Error")
+    err_dlg.addText("Participant code already exists")
+    err_dlg.show()
+    core.quit()
+
+print("Runtime variables:", runtime_vars)
 
 while True:
     is_incongruent = random.choice([True, False])
