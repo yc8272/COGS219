@@ -3,6 +3,8 @@ import sys
 import random
 from psychopy import visual, event, core, gui
 import os
+import trial_generator
+import csv
 
 def make_incongruent(color):
     other_colors = [c for c in stimuli if c != color]
@@ -49,16 +51,23 @@ if os.path.exists(file):
 
 print("Runtime variables:", runtime_vars)
 
-while True:
-    is_incongruent = random.choice([True, False])
-    word = random.choice(stimuli)
-    if is_incongruent:
-        display_color = make_incongruent(word)
+trial_file = trial_generator.generate_trials(runtime_vars['subj_code'], runtime_vars['prop_incongruent'], num_trials=100)
+
+trials = []
+with open(trial_file, "r") as csvfile:
+    reader = csv.DictReader(csvfile)
+    for r in reader:
+        trials.append(r)
+
+for trial_num, trial in enumerate(trials, start=1):
+    word_stim.setText(trial["word"])
+    word_stim.setColor(trial["color"])
+    
+    if trial["orientation"] == "upside_down":
+        word_stim.ori = 180
     else:
-        display_color = word
-        
-    word_stim.setText(word)
-    word_stim.setColor(display_color)
+        word_stim.ori = 0
+
     placeholder.draw()
     fixation.draw()
     win.flip()
@@ -89,19 +98,14 @@ while True:
         win.close()
         core.quit()
 
-    correct_response = display_color[0]
-    
+    correct_response = trial["color"][0]
     if key != correct_response:
         placeholder.draw()
         feedback.draw()
         win.flip()
         core.wait(1.0)
 
-    RTs.append(round(rt))
-    if is_incongruent:
-        condition_RTs['incongruent'].append(round(rt))
-    else:
-        condition_RTs['congruent'].append(round(rt))    
+    print(f"Trial {trial_num}: word={trial['word']}, color={trial['color']}, orientation={trial['orientation']}, response={key}, RT={round(rt)}ms")
 
     placeholder.draw()
     win.flip()
