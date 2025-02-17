@@ -10,6 +10,30 @@ def make_incongruent(color):
     other_colors = [c for c in stimuli if c != color]
     return random.choice(other_colors)
 
+def write_data(trial, trial_num, resp, is_correct, rt):
+    data_dir = "data"
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+    data_filename = os.path.join(data_dir, f"{trial['subj_code']}_data.csv")
+    file_exists = os.path.exists(data_filename)
+    with open(data_filename, "a", newline="") as csvfile:
+        fieldnames = ["subj_code", "trial_num", "word", "color", "congruence", 
+                      "orientation", "resp", "is_correct", "RT"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow({
+            "subj_code": trial["subj_code"],
+            "trial_num": trial_num,
+            "word": trial["word"],
+            "color": trial["color"],
+            "congruence": trial["congruence"],
+            "orientation": trial["orientation"],
+            "resp": resp,
+            "is_correct": int(is_correct),
+            "RT": rt
+        })
+
 stimuli = ['red', 'orange', 'yellow', 'green', 'blue']
 valid_keys = ['r', 'o', 'y', 'g', 'b', 'q']
 RTs = []
@@ -82,7 +106,7 @@ for trial_num, trial in enumerate(trials, start=1):
     rt_clock.reset()
     
     key = event.waitKeys(maxWait=2.0, keyList=valid_keys)
-    rt = rt_clock.getTime() * 1000
+    rt = int(round(rt_clock.getTime() * 1000)) 
 
     if key is None:
         placeholder.draw()
@@ -98,14 +122,25 @@ for trial_num, trial in enumerate(trials, start=1):
         win.close()
         core.quit()
 
-    correct_response = trial["color"][0]
-    if key != correct_response:
+    if key is None:
+        resp = "None"
+        is_correct = 0
         placeholder.draw()
-        feedback.draw()
+        timeout.draw()
         win.flip()
         core.wait(1.0)
+    else:
+        resp = key[0]
+        correct_response = trial["color"][0]
+        is_correct = (resp == correct_response)
+        if not is_correct:
+            placeholder.draw()
+            feedback.draw()
+            win.flip()
+            core.wait(1.0)
 
     print(f"Trial {trial_num}: word={trial['word']}, color={trial['color']}, orientation={trial['orientation']}, response={key}, RT={round(rt)}ms")
+    write_data(trial, trial_num, resp, is_correct, rt)
 
     placeholder.draw()
     win.flip()
