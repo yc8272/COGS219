@@ -17,19 +17,20 @@ def write_data(trial, trial_num, resp, is_correct, rt):
     data_filename = os.path.join(data_dir, f"{trial['subj_code']}_data.csv")
     file_exists = os.path.exists(data_filename)
     with open(data_filename, "a", newline="") as csvfile:
-        fieldnames = ["subj_code", "trial_num", "word", "color", "congruence", 
-                      "orientation", "resp", "is_correct", "RT"]
+        fieldnames = ["subj_code", "seed", "word", "color", "trial_type", 
+                      "orientation", "trial_num", "response", "is_correct", "RT"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         if not file_exists:
             writer.writeheader()
         writer.writerow({
             "subj_code": trial["subj_code"],
-            "trial_num": trial_num,
+            "seed": trial["seed"],
             "word": trial["word"],
             "color": trial["color"],
-            "congruence": trial["congruence"],
+            "trial_type": trial["trial_type"],
             "orientation": trial["orientation"],
-            "resp": resp,
+            "trial_num": trial_num,
+            "response": resp,
             "is_correct": int(is_correct),
             "RT": rt
         })
@@ -54,14 +55,16 @@ rt_clock = core.Clock()
 runtime_vars = {}
 dlg = gui.Dlg(title="Stroop Task Setup")
 dlg.addField('Subject Code:')
-dlg.addField('Proportion Incongruent Trials:', choices=["25", "50", "75"])
+dlg.addField('Seed:')
+dlg.addField('Number of repetitions:')
 ok_data = dlg.show()
 
 if not dlg.OK:
     core.quit()
 
 runtime_vars['subj_code'] = ok_data[0]
-runtime_vars['prop_incongruent'] = int(ok_data[1])
+runtime_vars['seed'] = int(ok_data[1])
+runtime_vars['num_reps'] = int(ok_data[2])
 
 data_dir = "data"
 if not os.path.exists(data_dir):
@@ -75,7 +78,7 @@ if os.path.exists(file):
 
 print("Runtime variables:", runtime_vars)
 
-trial_file = trial_generator.generate_trials(runtime_vars['subj_code'], runtime_vars['prop_incongruent'], num_trials=100)
+trial_file = trial_generator.generate_trials(runtime_vars['subj_code'], runtime_vars['seed'], runtime_vars['num_reps'])
 
 trials = []
 with open(trial_file, "r") as csvfile:

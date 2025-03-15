@@ -1,0 +1,14 @@
+subj_code,seed,word,color,trial_type,orientation,trial_num,response,is_correct,RT
+stroop_101,101,red,blue,incongruent,upside_down,1,r,0,850
+stroop_101,101,green,green,congruent,upright,2,g,1,689
+stroop_101,101,green,green,congruent,upright,3,g,1,463
+stroop_101,101,green,green,congruent,upside_down,4,g,1,578
+stroop_101,101,blue,orange,incongruent,upright,5,o,1,1380
+stroop_101,101,red,blue,incongruent,upside_down,6,r,0,1003
+stroop_101,101,green,blue,incongruent,upright,7,b,1,1077
+stroop_101,101,red,red,congruent,upside_down,8,r,1,1269
+stroop_101,101,orange,orange,congruent,upside_down,9,o,1,1057
+stroop_101,101,yellow,yellow,congruent,upside_down,10,y,1,1158
+stroop_101,101,yellow,yellow,congruent,upright,11,y,1,998
+stroop_101,101,yellow,green,incongruent,upright,12,g,1,1004
+stroop_101,101,orange,green,incongruent,upright,13,o,0,1090
